@@ -1,0 +1,65 @@
+services:
+  # MongoDB สำหรับเก็บข้อมูล Router
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-net
+    env_file:
+      - .env
+
+  # RabbitMQ พร้อมหน้าเว็บสำหรับบริหารจัดการ (port 15672)
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-net
+    # อ่านค่า RABBITMQ_DEFAULT_USER และ RABBITMQ_DEFAULT_PASS จาก .env หรือกำหนดตรงนี้ก็ได้
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+
+  # Web app (Flask) ใช้งานฐานข้อมูล MongoDB
+  web:
+    build: ./web
+    ports:
+      - "8080:8080"       # หากพอร์ต 8080 ถูกใช้งาน อาจปรับด้านหน้าเป็นพอร์ตอื่น เช่น 8081:8080
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app-net
+    env_file:
+      - .env
+    environment:
+      # เชื่อมต่อ MongoDB โดยอาศัย username/password จากไฟล์ .env (MONGO_INITDB_ROOT_USERNAME/PASSWORD)
+      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/"
+      DB_NAME: "ipa2025_db"
+
+  # Scheduler อ่านข้อมูล Router จาก MongoDB แล้วส่งงานไปคิวของ RabbitMQ ทุก ๆ 10 วินาที
+  scheduler:
+    build: ./scheduler
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app-net
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: "mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/"
+      DB_NAME: "ipa2025_db"
+      QUEUE_NAME: "router_jobs"   # ชื่อคิวที่ใช้ส่งงานไปยัง RabbitMQ
+
+volumes:
+  mongo-data:
+
+networks:
+  app-net:
