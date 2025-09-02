@@ -1,18 +1,21 @@
+from pymongo import MongoClient
+from datetime import datetime, UTC
 import os
 
-from pymongo import MongoClient
 
+def save_interface_status(router_ip, interfaces):
 
-def get_router_info():
-    mongo_uri  = os.environ.get("MONGO_URI")
-    db_name    = os.environ.get("DB_NAME")
+    MONGO_URI = os.getenv("MONGO_URI")
+    DB_NAME = os.getenv("DB_NAME")
 
-    client = MongoClient(mongo_uri)
-    db = client[db_name]
-    routers = db["routers"]
+    client = MongoClient(MONGO_URI)
+    db = client[DB_NAME]
+    collection = db["interface_status"]
 
-    router_data = routers.find()
-    return router_data
-
-if __name__=='__main__':
-    get_router_info()
+    data = {
+        "router_ip": router_ip,
+        "timestamp": datetime.now(UTC),
+        "interfaces": interfaces,
+    }
+    collection.insert_one(data)
+    client.close()

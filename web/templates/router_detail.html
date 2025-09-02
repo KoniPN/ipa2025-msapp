@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Router Detail</title>
+    <link rel="stylesheet" href="/static/style.css" />
+
+</head>
+<body>
+    <<h1>Router: {{ router_ip }}</h1>
+{% for doc in details %}
+  <h3>{{ doc.timestamp }}</h3>
+  {% if doc.interfaces %}
+    <table border="1">
+      <tr><th>Interface</th><th>IP Address</th><th>Status</th><th>Protocol</th></tr>
+      {% for iface in doc.interfaces %}
+        <tr>
+          <td>{{ iface.interface }}</td>
+          <td>{{ iface.ip_address }}</td>
+          <td>{{ iface.status }}</td>
+          <td>{{ iface.proto }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>No interface data.</p>
+  {% endif %}
+{% endfor %}
+
+    <p><a href="{{ url_for('index') }}">Back</a></p>
+</body>
+</html>
