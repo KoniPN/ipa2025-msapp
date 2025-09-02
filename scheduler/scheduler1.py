@@ -12,6 +12,7 @@ def scheduler():
         ms = int((now % 1) * 1000)
         now_str_with_ms = f"{now_str}.{ms:03d}"
         print(f"[{now_str_with_ms}] run #{count}")
+        print("wrong file")
 
         try:
             produce("localhost", "192.168.1.1")

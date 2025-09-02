@@ -7,7 +7,7 @@ from database import get_router_info
 
 def scheduler():
 
-    INTERVAL = 10.0
+    INTERVAL = 60.0
     next_run = time.monotonic()
     count = 0
 
@@ -17,12 +17,14 @@ def scheduler():
         ms = int((now % 1) * 1000)  
         now_str_with_ms = f"{now_str}.{ms:03d}"
         print(f"[{now_str_with_ms}] run #{count}")
+        
 
         try:
             for data in get_router_info():
                 body_bytes = json_util.dumps(data).encode("utf-8")
-                produce("localhost", body_bytes)
+                produce("rabbitmq", body_bytes)
         except Exception as e:
+            print("Bruh why here")
             print(e)
             time.sleep(3)
         count += 1
