@@ -5,8 +5,6 @@ from flask import redirect
 from flask import url_for
 from pymongo import MongoClient
 
-
-
 client = MongoClient("mongodb://localhost:27017/")
 mydb = client["mydatabase"]
 mycol = mydb["mycollection"]
@@ -24,10 +22,12 @@ def add_comment():
     ip = request.form.get("ip")
     username = request.form.get("username")
     password = request.form.get("password")
-
     if ip and username and password:
-        mycol.insert_one({"ip": ip, "username": username, "password": password})
-
+        mycol.insert_one({
+            "ip": ip,
+            "username": username,
+            "password": password
+        })
     return redirect(url_for("main"))
 
 
