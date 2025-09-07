@@ -18,9 +18,15 @@ interfaces_col = db["interface_status"]
 @app.route("/router/<router_ip>", methods=["GET"])
 def show_router(router_ip):
     details = list(
-        interfaces_col.find({"router_ip": router_ip}).sort("timestamp", -1).limit(3)
+        interfaces_col.find({"router_ip": router_ip})
+        .sort("timestamp", -1)
+        .limit(3)
     )
-    return render_template("router_detail.html", router_ip=router_ip, details=details)
+    return render_template(
+        "router_detail.html",
+        router_ip=router_ip,
+        details=details
+    )
 
 
 @app.route("/", methods=["GET"])
@@ -35,7 +41,11 @@ def add_router():
     password = request.form.get("password")
 
     if ip and username and password:
-        routers.insert_one({"ip": ip, "username": username, "password": password})
+        routers.insert_one({
+            "ip": ip,
+            "username": username,
+            "password": password
+        })
     return redirect("/")
 
 

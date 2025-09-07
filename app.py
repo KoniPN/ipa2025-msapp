@@ -23,7 +23,11 @@ def add_comment():
     username = request.form.get("username")
     password = request.form.get("password")
     if ip and username and password:
-        mycol.insert_one({"ip": ip, "username": username, "password": password})
+        mycol.insert_one({
+            "ip": ip,
+            "username": username, 
+            "password": password
+        })
     return redirect(url_for("main"))
 
 
