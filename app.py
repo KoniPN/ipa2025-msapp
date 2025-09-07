@@ -25,7 +25,7 @@ def add_comment():
     if ip and username and password:
         mycol.insert_one({
             "ip": ip,
-            "username": username, 
+            "username": username,
             "password": password
         })
     return redirect(url_for("main"))
