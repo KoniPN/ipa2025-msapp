@@ -46,6 +46,6 @@ jobs:
         docker build -t konipn/scheduler:latest ./scheduler
         docker build -t konipn/web:latest ./web
 
-        docker push Konipn/worker:latest
-        docker push Konipn/scheduler:latest
-        docker push Konipn/web:latest
+        docker push konipn/worker:latest
+        docker push konipn/scheduler:latest
+        docker push konipn/web:latest
