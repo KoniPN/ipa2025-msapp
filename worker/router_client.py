@@ -4,7 +4,7 @@ import os
 import json
 
 
-def get_interfaces(ip, username, password):
+def get_netflow_config(ip, username, password):
 
     os.environ["NET_TEXTFSM"] = os.path.join(
         os.path.dirname(ntc_templates.__file__), "templates"
@@ -15,16 +15,18 @@ def get_interfaces(ip, username, password):
         "host": ip,
         "username": username,
         "password": password,
+        "secret": password,  # ใช้ password เดียวกันสำหรับ enable
     }
 
     with ConnectHandler(**device) as conn:
         conn.enable()
-        result = conn.send_command("show ip int br", use_textfsm=True)
+        # Get netflow configuration
+        result = conn.send_command("show ip flow export", use_textfsm=False)
         conn.disconnect()
 
-    print(json.dumps(result, indent=2))
-    return result
+    print(json.dumps({"output": result}, indent=2))
+    return {"output": result}
 
 
 if __name__ == "__main__":
-    get_interfaces()
+    get_netflow_config()

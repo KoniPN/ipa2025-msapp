@@ -12,13 +12,13 @@ db_name = os.environ.get("DB_NAME")
 client = MongoClient(mongo_uri)
 db = client[db_name]
 routers = db["routers"]
-interfaces_col = db["interface_status"]
+netflow_col = db["netflow_status"]
 
 
 @app.route("/router/<router_ip>", methods=["GET"])
 def show_router(router_ip):
     details = list(
-        interfaces_col.find({"router_ip": router_ip}).sort("timestamp", -1).limit(3)
+        netflow_col.find({"router_ip": router_ip}).sort("timestamp", -1).limit(3)
     )
     return render_template("router_detail.html", router_ip=router_ip, details=details)
 
